@@ -28,14 +28,9 @@ export default function Logo({ size = 'md', variant = 'dark' }: Props) {
         {/* Background */}
         <rect width="48" height="48" rx="12" fill="url(#bg)" />
 
-        {/* Bold "E" mark */}
-        <path
-          d="M14 13H34M14 13V35M14 13H14M14 24H28M14 35H34M14 35H14"
-          stroke="white"
-          strokeWidth="4"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
+        {/* Minimal mark — two horizontal lines */}
+        <line x1="13" y1="20" x2="35" y2="20" stroke="white" strokeWidth="3.5" strokeLinecap="round" opacity="1" />
+        <line x1="13" y1="28" x2="28" y2="28" stroke="white" strokeWidth="3.5" strokeLinecap="round" opacity="0.5" />
       </svg>
 
       {/* Wordmark */}
