@@ -25,6 +25,33 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
+/* Better focus rings for accessibility */
+*:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* AI badge utility class */
+.badge-ai {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background-color: #dbeafe;
+  color: #1d4ed8;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  border: 1px solid #bfdbfe;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+}
+
 @media print {
   .no-print { display: none !important; }
   .print-only { display: block !important; }

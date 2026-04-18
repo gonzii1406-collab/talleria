@@ -13,8 +13,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TallerIA — Diagnóstico Inteligente",
-  description: "App de diagnóstico de vehículos para talleres mecánicos",
+  title: "TallerIA — Diagnóstico IA para talleres",
+  description:
+    "Diagnóstico inteligente para talleres mecánicos en España. Obtén causas, pruebas y soluciones por código de fallo OBD con inteligencia artificial.",
+  manifest: "/manifest.json",
+  other: {
+    "theme-color": "#1e40af",
+  },
 };
 
 export default function RootLayout({
@@ -24,7 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="es"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
