@@ -1,10 +1,10 @@
 'use client'
 
-import { X, Check } from 'lucide-react'
+import { useState } from 'react'
+import { X, Check, Loader2 } from 'lucide-react'
 
 interface Props {
   onClose: () => void
-  onStart?: () => void
 }
 
 const plans = [
@@ -45,8 +45,32 @@ const plans = [
   },
 ]
 
-export default function PricingModal({ onClose, onStart }: Props) {
-  function handleStart() { onClose(); onStart?.() }
+export default function PricingModal({ onClose }: Props) {
+  const [loading, setLoading] = useState<string | null>(null)
+  const [error, setError] = useState('')
+
+  async function handleStart(planName: string) {
+    setLoading(planName)
+    setError('')
+    try {
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan: planName }),
+      })
+      const data = await res.json()
+      if (!res.ok || !data.url) {
+        setError(data.error || 'Error al conectar con el pago')
+        return
+      }
+      window.location.href = data.url
+    } catch {
+      setError('Error de conexión. Inténtalo de nuevo.')
+    } finally {
+      setLoading(null)
+    }
+  }
+
   return (
     <div
       className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
@@ -83,7 +107,7 @@ export default function PricingModal({ onClose, onStart }: Props) {
             >
               {plan.popular && (
                 <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap">
-                  Mas popular
+                  Más popular
                 </span>
               )}
 
@@ -105,18 +129,25 @@ export default function PricingModal({ onClose, onStart }: Props) {
               </ul>
 
               <button
-                onClick={handleStart}
-                className={`w-full py-2.5 rounded-lg font-semibold text-sm transition-colors ${
+                onClick={() => handleStart(plan.name)}
+                disabled={loading !== null}
+                className={`w-full py-2.5 rounded-lg font-semibold text-sm transition-colors flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed ${
                   plan.popular
                     ? 'bg-blue-600 hover:bg-blue-700 text-white'
                     : 'bg-gray-100 hover:bg-gray-200 text-gray-800'
                 }`}
               >
-                Empezar
+                {loading === plan.name
+                  ? <><Loader2 className="w-4 h-4 animate-spin" /> Redirigiendo...</>
+                  : 'Suscribirse'}
               </button>
             </div>
           ))}
         </div>
+
+        {error && (
+          <p className="text-center text-xs text-red-500 pb-3 px-6">{error}</p>
+        )}
 
         <p className="text-center text-xs text-gray-400 pb-5">
           Todos los planes incluyen IVA · Pago seguro con Stripe
