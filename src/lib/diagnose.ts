@@ -1,12 +1,17 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { Vehicle } from './vehicle'
 
+export interface TestWithDiagram {
+  procedure: string
+  diagram?: string // SVG string
+}
+
 export interface DiagnosticReport {
   faultCode: string
   description: string
   severity: 'low' | 'medium' | 'high'
   causes: string[]
-  tests: string[]
+  tests: TestWithDiagram[]
   solutions: string[]
   parts: string[]
 }
@@ -18,10 +23,10 @@ export async function diagnose(
 ): Promise<DiagnosticReport> {
   const lang = locale === 'en' ? 'English' : 'Spanish'
 
-  const prompt = `You are an expert automotive diagnostic technician. A mechanic needs a diagnostic report.
+  const prompt = `You are an expert automotive diagnostic technician. A mechanic needs a diagnostic report with electrical wiring diagrams.
 
 Vehicle: ${vehicle.brand} ${vehicle.model} ${vehicle.year}, Engine: ${vehicle.engine}, Fuel: ${vehicle.fuel}
-Fault code from diagnostic machine: ${faultCode}
+Fault code: ${faultCode}
 
 Respond ONLY with a valid JSON object in ${lang} with this exact structure:
 {
@@ -29,25 +34,45 @@ Respond ONLY with a valid JSON object in ${lang} with this exact structure:
   "description": "clear description of what this fault code means",
   "severity": "low|medium|high",
   "causes": ["cause 1", "cause 2", "cause 3", "...up to 6 causes ordered by probability"],
-  "tests": ["test 1 with specific procedure", "test 2", "...up to 5 tests the mechanic should perform"],
+  "tests": [
+    {
+      "procedure": "detailed test procedure with specific values and tools",
+      "diagram": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200' width='400' height='200'>...complete SVG electrical diagram showing the test connections, component, wire colors and measurement points...</svg>"
+    }
+  ],
   "solutions": ["step 1", "step 2", "...ordered step by step repair procedure"],
   "parts": ["part 1", "part 2", "...commonly replaced parts for this fault"]
 }
 
-Be specific, practical, and oriented to a professional mechanic. Include specific values, procedures, and tools when relevant.`
+For each test, create a clear SVG electrical diagram showing:
+- The component being tested (sensor, relay, fuse, etc.) as a labeled rectangle or symbol
+- Wire connections with colors when known (use colored strokes)
+- Multimeter or oscilloscope connection points (red=positive, black=negative/ground)
+- Voltage or resistance values expected at each point
+- Ground points (triangle symbol at bottom)
+- Battery/power source when relevant
+
+SVG style guidelines:
+- White or light gray background (#f8f9fa)
+- Use simple geometric shapes: rect, circle, line, path, text
+- Wire colors: red=#dc2626, black=#111827, blue=#2563eb, green=#16a34a, yellow=#ca8a04, orange=#ea580c
+- Components: rounded rectangles with labels
+- Measurement points: small colored circles with labels
+- Keep it clean and readable for a mechanic
+- Text font-size: 11-12px, font-family: Arial
+
+Generate up to 4 tests, each with its own specific electrical diagram.`
 
   const apiKey = process.env.ANTHROPIC_API_KEY
   if (!apiKey) throw new Error('ANTHROPIC_API_KEY not set')
   const client = new Anthropic({ apiKey })
   const message = await client.messages.create({
-    model: 'claude-haiku-4-5-20251001',
-    max_tokens: 1500,
+    model: 'claude-sonnet-4-6',
+    max_tokens: 8000,
     messages: [{ role: 'user', content: prompt }],
   })
 
   const text = message.content[0].type === 'text' ? message.content[0].text : ''
-
-  // Extraer JSON de la respuesta
   const jsonMatch = text.match(/\{[\s\S]*\}/)
   if (!jsonMatch) throw new Error('Invalid AI response')
 

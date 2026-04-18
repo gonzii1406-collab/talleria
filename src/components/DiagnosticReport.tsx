@@ -1,7 +1,8 @@
 'use client'
 
-import { AlertTriangle, CheckCircle, Info, Wrench, TestTube, Package, ChevronRight } from 'lucide-react'
-import { DiagnosticReport } from '@/lib/diagnose'
+import { useState } from 'react'
+import { AlertTriangle, CheckCircle, Info, Wrench, TestTube, Package, ChevronRight, ChevronDown, Zap } from 'lucide-react'
+import { DiagnosticReport, TestWithDiagram } from '@/lib/diagnose'
 import { T } from '@/lib/i18n'
 
 interface Props {
@@ -20,6 +21,60 @@ const SEVERITY_ICONS = {
   low: <CheckCircle className="w-4 h-4" />,
   medium: <AlertTriangle className="w-4 h-4" />,
   high: <AlertTriangle className="w-4 h-4" />,
+}
+
+function TestItem({ test, index }: { test: TestWithDiagram; index: number }) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <li className="border border-gray-100 rounded-lg overflow-hidden">
+      <div className="flex gap-2 p-3 items-start">
+        <span className="shrink-0 mt-0.5 text-gray-400">
+          <ChevronRight className="w-4 h-4" />
+        </span>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm text-gray-700">{test.procedure}</p>
+          {test.diagram && (
+            <button
+              onClick={() => setOpen(o => !o)}
+              className="mt-2 flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 font-medium"
+            >
+              <Zap className="w-3 h-3" />
+              {open ? 'Ocultar esquema eléctrico' : 'Ver esquema eléctrico'}
+              {open ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
+            </button>
+          )}
+        </div>
+      </div>
+      {open && test.diagram && (
+        <div className="border-t border-blue-100 bg-gray-50 p-3 overflow-x-auto">
+          <div
+            className="min-w-0 rounded-lg overflow-hidden"
+            dangerouslySetInnerHTML={{ __html: test.diagram }}
+          />
+        </div>
+      )}
+    </li>
+  )
+}
+
+function TestsSection({ tests, title }: { tests: TestWithDiagram[]; title: string }) {
+  return (
+    <div className="bg-white rounded-xl border border-gray-200 p-4">
+      <div className="flex items-center gap-2 mb-3">
+        <span className="text-gray-600"><TestTube className="w-4 h-4" /></span>
+        <h3 className="font-semibold text-gray-900 text-sm">{title}</h3>
+        <span className="text-xs text-blue-500 bg-blue-50 px-2 py-0.5 rounded-full">
+          con esquemas eléctricos
+        </span>
+      </div>
+      <ul className="space-y-2">
+        {tests.map((test, i) => (
+          <TestItem key={i} test={test} index={i} />
+        ))}
+      </ul>
+    </div>
+  )
 }
 
 function Section({ icon, title, items, numbered = false }: {
@@ -58,6 +113,11 @@ export default function DiagnosticReportView({ report, t, onReset }: Props) {
     high: t.report.severity_high,
   }[report.severity]
 
+  // Compatibilidad: tests puede ser string[] (viejo) o TestWithDiagram[] (nuevo)
+  const tests: TestWithDiagram[] = report.tests.map((t: TestWithDiagram | string) =>
+    typeof t === 'string' ? { procedure: t } : t
+  )
+
   return (
     <div className="space-y-4">
       {/* Header */}
@@ -79,12 +139,8 @@ export default function DiagnosticReportView({ report, t, onReset }: Props) {
         items={report.causes}
       />
 
-      {/* Pruebas */}
-      <Section
-        icon={<TestTube className="w-4 h-4" />}
-        title={t.report.tests}
-        items={report.tests}
-      />
+      {/* Pruebas con esquemas eléctricos */}
+      <TestsSection tests={tests} title={t.report.tests} />
 
       {/* Soluciones */}
       <Section

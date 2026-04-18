@@ -60,7 +60,6 @@ export default function PrintReport({ vehicle, report }: Props) {
           {/* Secciones */}
           {[
             { title: 'Causas más probables', items: report.causes },
-            { title: 'Pruebas a realizar', items: report.tests },
             { title: 'Soluciones paso a paso', items: report.solutions },
             { title: 'Piezas afectadas', items: report.parts },
           ].map(({ title, items }) => (
@@ -73,6 +72,18 @@ export default function PrintReport({ vehicle, report }: Props) {
               </ol>
             </div>
           ))}
+
+          {/* Pruebas a realizar */}
+          <div style={{ marginBottom: '16px' }}>
+            <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: '#111827', borderBottom: '1px solid #e5e7eb', paddingBottom: '4px', marginBottom: '8px' }}>Pruebas a realizar</h3>
+            <ol style={{ margin: 0, paddingLeft: '20px' }}>
+              {report.tests.map((test, i) => (
+                <li key={i} style={{ fontSize: '13px', color: '#374151', marginBottom: '8px' }}>
+                  {typeof test === 'string' ? test : test.procedure}
+                </li>
+              ))}
+            </ol>
+          </div>
 
           <div style={{ marginTop: '24px', borderTop: '1px solid #e5e7eb', paddingTop: '8px', fontSize: '11px', color: '#9ca3af', textAlign: 'center' }}>
             Generado por TallerIA · Diagnóstico asistido por IA · Verificar siempre con equipos de taller
