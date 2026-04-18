@@ -41,24 +41,27 @@ export async function lookupVehicle(plate: string): Promise<Vehicle> {
         const json = await res.json()
         const d = json.data ?? json
 
-        const engineSize = d.EngineSize ? `${d.EngineSize}cc` : undefined
-        const power = d.DynamicPower ? `${Math.round(Number(d.DynamicPower))}cv` : undefined
+        const brand = toTitleCase(d.CarMake?.CurrentTextValue ?? d.CarMake ?? d.Make ?? '')
+        const model = toTitleCase(d.CarModel?.CurrentTextValue ?? d.CarModel ?? d.Model ?? d.Description ?? '')
 
-        // Inferir motor: cilindrada + combustible
-        const fuelLower = (d.Fuel ?? '').toLowerCase()
-        const engineLabel = engineSize
-          ? `${(Number(d.EngineSize) / 1000).toFixed(1)}${fuelLower.includes('diesel') ? ' TDI' : fuelLower.includes('híb') ? ' Hybrid' : ' TSI'}`
-          : '-'
-
-        return {
-          plate: cleanPlate,
-          brand: toTitleCase(d.CarMake ?? d.Make ?? ''),
-          model: toTitleCase(d.CarModel ?? d.Model ?? d.Description ?? ''),
-          year: parseInt(d.RegistrationYear ?? d.Year ?? '0') || 0,
-          engine: engineLabel,
-          fuel: toTitleCase(d.Fuel ?? d.FuelType ?? 'Desconocido'),
-          displacement: engineSize,
-          power,
+        // Solo usar openapi si tiene marca — si no, caer a matriculaapi
+        if (brand) {
+          const engineSize = d.EngineSize ? `${d.EngineSize}cc` : undefined
+          const power = d.DynamicPower ? `${Math.round(Number(d.DynamicPower))}cv` : undefined
+          const fuelLower = (d.Fuel ?? '').toLowerCase()
+          const engineLabel = engineSize
+            ? `${(Number(d.EngineSize) / 1000).toFixed(1)}${fuelLower.includes('diesel') ? ' TDI' : fuelLower.includes('híb') ? ' Hybrid' : ' TSI'}`
+            : '-'
+          return {
+            plate: cleanPlate,
+            brand,
+            model,
+            year: parseInt(d.RegistrationYear ?? d.Year ?? '0') || 0,
+            engine: engineLabel,
+            fuel: toTitleCase(d.Fuel ?? d.FuelType ?? 'Desconocido'),
+            displacement: engineSize,
+            power,
+          }
         }
       }
     } catch {
