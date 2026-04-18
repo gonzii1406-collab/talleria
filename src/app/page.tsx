@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Search, Loader2, Wrench, Zap, FileText, Clock, Star, ChevronRight, Cpu } from 'lucide-react'
+import Logo from '@/components/Logo'
 import { Locale, translations } from '@/lib/i18n'
 import { Vehicle } from '@/lib/vehicle'
 import { DiagnosticReport } from '@/lib/diagnose'
@@ -115,13 +116,8 @@ export default function Home() {
       {/* ── HEADER ── */}
       <header className="fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur border-b border-gray-100 no-print">
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-          <button onClick={reset} className="flex items-center gap-2 group">
-            <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center group-hover:bg-blue-700 transition-colors">
-              <Wrench className="w-4 h-4 text-white" />
-            </div>
-            <span className="font-bold text-gray-900 text-base">
-              ECU<span className="text-blue-600">nex</span>
-            </span>
+          <button onClick={reset}>
+            <Logo size="sm" />
           </button>
 
           <div className="flex items-center gap-2">
@@ -274,7 +270,7 @@ export default function Home() {
           {/* Footer */}
           <footer className="border-t border-gray-100 py-6 px-4">
             <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-400">
-              <span className="font-semibold text-gray-900">ECU<span className="text-blue-600">nex</span></span>
+              <Logo size="sm" />
               <div className="flex gap-4">
                 <button onClick={() => setShowPricing(true)} className="hover:text-gray-700 transition-colors">Precios</button>
                 <span>Privacidad</span>
