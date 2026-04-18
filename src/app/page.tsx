@@ -117,7 +117,7 @@ export default function Home() {
       <header className="fixed top-0 left-0 right-0 z-40 bg-[#0a0f1e]/95 backdrop-blur border-b border-white/5 no-print">
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
           <button onClick={reset}>
-            <Logo size="sm" variant="light" />
+            <Logo size="md" variant="light" />
           </button>
 
           <div className="flex items-center gap-2">
