@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { AlertTriangle, CheckCircle, Info, Wrench, TestTube, Package, ChevronRight, ChevronDown, Zap } from 'lucide-react'
+import { AlertTriangle, CheckCircle, ChevronDown, ChevronUp, Zap, RotateCcw } from 'lucide-react'
 import { DiagnosticReport, TestWithDiagram } from '@/lib/diagnose'
 import { T } from '@/lib/i18n'
 
@@ -11,158 +11,140 @@ interface Props {
   onReset: () => void
 }
 
-const SEVERITY_COLORS = {
-  low: 'bg-green-50 border-green-200 text-green-800',
-  medium: 'bg-yellow-50 border-yellow-200 text-yellow-800',
-  high: 'bg-red-50 border-red-200 text-red-800',
-}
-
-const SEVERITY_ICONS = {
-  low: <CheckCircle className="w-4 h-4" />,
-  medium: <AlertTriangle className="w-4 h-4" />,
-  high: <AlertTriangle className="w-4 h-4" />,
+const SEVERITY_CONFIG = {
+  low:    { bg: 'bg-emerald-500', light: 'bg-emerald-50 text-emerald-700 border-emerald-200', label: 'Leve',     icon: <CheckCircle className="w-3.5 h-3.5" /> },
+  medium: { bg: 'bg-amber-500',   light: 'bg-amber-50 text-amber-700 border-amber-200',     label: 'Moderada',  icon: <AlertTriangle className="w-3.5 h-3.5" /> },
+  high:   { bg: 'bg-red-500',     light: 'bg-red-50 text-red-700 border-red-200',           label: 'Alta',      icon: <AlertTriangle className="w-3.5 h-3.5" /> },
 }
 
 function TestItem({ test, index }: { test: TestWithDiagram; index: number }) {
   const [open, setOpen] = useState(false)
 
   return (
-    <li className="border border-gray-100 rounded-lg overflow-hidden">
-      <div className="flex gap-2 p-3 items-start">
-        <span className="shrink-0 mt-0.5 text-gray-400">
-          <ChevronRight className="w-4 h-4" />
+    <div className="border border-gray-100 rounded-xl overflow-hidden bg-white">
+      <div className="flex gap-3 p-4 items-start">
+        <span className="shrink-0 w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center mt-0.5">
+          {index + 1}
         </span>
         <div className="flex-1 min-w-0">
-          <p className="text-sm text-gray-700">{test.procedure}</p>
+          <p className="text-sm text-gray-800 leading-relaxed">{test.procedure}</p>
           {test.diagram && (
             <button
               onClick={() => setOpen(o => !o)}
-              className="mt-2 flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 font-medium"
+              className="mt-2.5 inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-2.5 py-1 rounded-lg transition-colors"
             >
               <Zap className="w-3 h-3" />
-              {open ? 'Ocultar esquema eléctrico' : 'Ver esquema eléctrico'}
-              {open ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
+              {open ? 'Ocultar esquema' : 'Ver esquema eléctrico'}
+              {open ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
             </button>
           )}
         </div>
       </div>
       {open && test.diagram && (
-        <div className="border-t border-blue-100 bg-gray-50 p-3 overflow-x-auto">
+        <div className="border-t border-blue-100 bg-slate-50 p-4 overflow-x-auto">
           <div
-            className="min-w-0 rounded-lg overflow-hidden"
+            className="rounded-xl overflow-hidden"
             dangerouslySetInnerHTML={{ __html: test.diagram }}
           />
         </div>
       )}
-    </li>
-  )
-}
-
-function TestsSection({ tests, title }: { tests: TestWithDiagram[]; title: string }) {
-  return (
-    <div className="bg-white rounded-xl border border-gray-200 p-4">
-      <div className="flex items-center gap-2 mb-3">
-        <span className="text-gray-600"><TestTube className="w-4 h-4" /></span>
-        <h3 className="font-semibold text-gray-900 text-sm">{title}</h3>
-        <span className="text-xs text-blue-500 bg-blue-50 px-2 py-0.5 rounded-full">
-          con esquemas eléctricos
-        </span>
-      </div>
-      <ul className="space-y-2">
-        {tests.map((test, i) => (
-          <TestItem key={i} test={test} index={i} />
-        ))}
-      </ul>
     </div>
   )
 }
 
-function Section({ icon, title, items, numbered = false }: {
-  icon: React.ReactNode
-  title: string
-  items: string[]
-  numbered?: boolean
-}) {
+function SectionCard({ title, accent, children }: { title: string; accent: string; children: React.ReactNode }) {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-4">
-      <div className="flex items-center gap-2 mb-3">
-        <span className="text-gray-600">{icon}</span>
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className={`flex items-center gap-3 px-4 py-3 border-b border-gray-100`}>
+        <div className={`w-1 h-5 rounded-full ${accent}`} />
         <h3 className="font-semibold text-gray-900 text-sm">{title}</h3>
       </div>
-      <ul className="space-y-2">
-        {items.map((item, i) => (
-          <li key={i} className="flex gap-2 text-sm text-gray-700">
-            <span className="shrink-0 mt-0.5 text-gray-400">
-              {numbered
-                ? <span className="w-5 h-5 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-xs font-bold">{i + 1}</span>
-                : <ChevronRight className="w-4 h-4" />
-              }
-            </span>
-            <span>{item}</span>
-          </li>
-        ))}
-      </ul>
+      <div className="p-4">{children}</div>
     </div>
   )
 }
 
 export default function DiagnosticReportView({ report, t, onReset }: Props) {
-  const severityLabel = {
-    low: t.report.severity_low,
-    medium: t.report.severity_medium,
-    high: t.report.severity_high,
-  }[report.severity]
+  const sev = SEVERITY_CONFIG[report.severity]
 
-  // Compatibilidad: tests puede ser string[] (viejo) o TestWithDiagram[] (nuevo)
   const tests: TestWithDiagram[] = report.tests.map((t: TestWithDiagram | string) =>
     typeof t === 'string' ? { procedure: t } : t
   )
 
   return (
-    <div className="space-y-4">
-      {/* Header */}
-      <div className="bg-gray-900 rounded-xl p-4 text-white">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-xs text-gray-400 font-mono">{report.faultCode}</span>
-          <span className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium border ${SEVERITY_COLORS[report.severity]}`}>
-            {SEVERITY_ICONS[report.severity]}
-            {t.report.severity}: {severityLabel}
-          </span>
+    <div className="space-y-3">
+
+      {/* Header — fault code + description */}
+      <div className="bg-slate-900 rounded-2xl overflow-hidden shadow-sm">
+        {/* Severity bar */}
+        <div className={`h-1 w-full ${sev.bg}`} />
+        <div className="p-5">
+          <div className="flex items-start justify-between gap-3 mb-3">
+            <span className="font-mono font-black text-2xl text-white tracking-wider">
+              {report.faultCode}
+            </span>
+            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold border ${sev.light}`}>
+              {sev.icon}
+              {t.report.severity}: {sev.label}
+            </span>
+          </div>
+          <p className="text-slate-300 text-sm leading-relaxed">{report.description}</p>
         </div>
-        <p className="text-sm text-gray-200 leading-relaxed">{report.description}</p>
       </div>
 
       {/* Causas */}
-      <Section
-        icon={<Info className="w-4 h-4" />}
-        title={t.report.causes}
-        items={report.causes}
-      />
+      <SectionCard title={t.report.causes} accent="bg-amber-400">
+        <ul className="space-y-2.5">
+          {report.causes.map((c, i) => (
+            <li key={i} className="flex gap-3 text-sm text-gray-700">
+              <span className="shrink-0 w-5 h-5 rounded-full bg-amber-100 text-amber-700 text-xs font-bold flex items-center justify-center mt-0.5">{i + 1}</span>
+              <span className="leading-relaxed">{c}</span>
+            </li>
+          ))}
+        </ul>
+      </SectionCard>
 
-      {/* Pruebas con esquemas eléctricos */}
-      <TestsSection tests={tests} title={t.report.tests} />
+      {/* Pruebas */}
+      <SectionCard title={t.report.tests} accent="bg-blue-500">
+        <div className="space-y-2">
+          <p className="text-xs text-blue-600 font-medium mb-3 flex items-center gap-1">
+            <Zap className="w-3 h-3" /> Incluye esquemas eléctricos interactivos
+          </p>
+          {tests.map((test, i) => (
+            <TestItem key={i} test={test} index={i} />
+          ))}
+        </div>
+      </SectionCard>
 
       {/* Soluciones */}
-      <Section
-        icon={<Wrench className="w-4 h-4" />}
-        title={t.report.solutions}
-        items={report.solutions}
-        numbered
-      />
+      <SectionCard title={t.report.solutions} accent="bg-emerald-500">
+        <ol className="space-y-3">
+          {report.solutions.map((s, i) => (
+            <li key={i} className="flex gap-3 text-sm text-gray-700">
+              <span className="shrink-0 w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold flex items-center justify-center mt-0.5">{i + 1}</span>
+              <span className="leading-relaxed pt-0.5">{s}</span>
+            </li>
+          ))}
+        </ol>
+      </SectionCard>
 
       {/* Piezas */}
-      <Section
-        icon={<Package className="w-4 h-4" />}
-        title={t.report.parts}
-        items={report.parts}
-      />
+      <SectionCard title={t.report.parts} accent="bg-slate-400">
+        <div className="flex flex-wrap gap-2">
+          {report.parts.map((p, i) => (
+            <span key={i} className="inline-flex items-center bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-medium px-3 py-1.5 rounded-lg transition-colors">
+              {p}
+            </span>
+          ))}
+        </div>
+      </SectionCard>
 
-      {/* Reset */}
+      {/* Nueva búsqueda */}
       <button
         onClick={onReset}
-        className="w-full py-3 rounded-xl border-2 border-dashed border-gray-300 text-gray-500 hover:border-blue-400 hover:text-blue-600 transition-colors text-sm font-medium"
+        className="w-full py-3.5 rounded-2xl border-2 border-dashed border-gray-200 text-gray-400 hover:border-blue-400 hover:text-blue-600 transition-all text-sm font-medium flex items-center justify-center gap-2"
       >
-        {t.newSearch}
+        <RotateCcw className="w-4 h-4" /> {t.newSearch}
       </button>
     </div>
   )
