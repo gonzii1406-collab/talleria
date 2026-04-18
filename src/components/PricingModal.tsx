@@ -24,7 +24,7 @@ const plans = [
     popular: true,
     features: [
       '3 usuarios',
-      '200 diagnósticos/mes',
+      '100 diagnósticos/mes',
       'Esquemas eléctricos',
       'Historial ilimitado',
       'Soporte por email',
