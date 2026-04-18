@@ -114,7 +114,7 @@ export default function Home() {
       {showPricing && <PricingModal onClose={() => setShowPricing(false)} />}
 
       {/* ── HEADER ── */}
-      <header className="fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur border-b border-gray-100 no-print">
+      <header className="fixed top-0 left-0 right-0 z-40 bg-[#0a0f1e]/95 backdrop-blur border-b border-white/5 no-print">
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
           <button onClick={reset}>
             <Logo size="sm" />
@@ -124,7 +124,7 @@ export default function Home() {
             <LanguageSelector locale={locale} onChange={setLocale} />
             <button
               onClick={() => setShowPricing(true)}
-              className="hidden sm:flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+              className="hidden sm:flex items-center gap-1 text-sm text-slate-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/10 transition-colors"
             >
               Precios
             </button>
