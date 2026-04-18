@@ -103,6 +103,7 @@ export default function PricingModal({ onClose }: Props) {
               </ul>
 
               <button
+                onClick={onClose}
                 className={`w-full py-2.5 rounded-lg font-semibold text-sm transition-colors ${
                   plan.popular
                     ? 'bg-blue-600 hover:bg-blue-700 text-white'
