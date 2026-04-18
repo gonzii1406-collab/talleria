@@ -117,7 +117,7 @@ export default function Home() {
       <header className="fixed top-0 left-0 right-0 z-40 bg-[#0a0f1e]/95 backdrop-blur border-b border-white/5 no-print">
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
           <button onClick={reset}>
-            <Logo size="sm" />
+            <Logo size="sm" variant="light" />
           </button>
 
           <div className="flex items-center gap-2">
@@ -330,7 +330,7 @@ export default function Home() {
           </div>
           <footer className="border-t border-gray-100 py-6 px-4 bg-white">
             <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-400">
-              <Logo size="sm" />
+              <Logo size="sm" variant="light" />
               <div className="flex gap-5">
                 <button onClick={() => setShowPricing(true)} className="hover:text-gray-700 transition-colors font-medium">Precios</button>
                 <span className="cursor-default">Privacidad</span>

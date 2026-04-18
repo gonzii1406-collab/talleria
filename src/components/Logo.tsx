@@ -25,7 +25,7 @@ export default function Logo({ size = 'md', variant = 'dark' }: Props) {
         xmlns="http://www.w3.org/2000/svg"
       >
         {/* Background */}
-        <rect width="36" height="36" rx="9" fill="#0f172a" />
+        <rect width="36" height="36" rx="9" fill="#2563eb" />
 
         {/* Circuit traces — left side */}
         <line x1="3" y1="13" x2="9" y2="13" stroke="#0ea5e9" strokeWidth="1.5" strokeLinecap="round" />
