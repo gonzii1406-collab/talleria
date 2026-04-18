@@ -111,7 +111,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white">
-      {showPricing && <PricingModal onClose={() => setShowPricing(false)} />}
+      {showPricing && <PricingModal onClose={() => setShowPricing(false)} onStart={() => { setTimeout(() => document.getElementById('plate-input')?.focus(), 100) }} />}
 
       {/* ── HEADER ── */}
       <header className="fixed top-0 left-0 right-0 z-40 bg-[#0a0f1e]/95 backdrop-blur border-b border-white/5 no-print">
@@ -175,6 +175,7 @@ export default function Home() {
                   </p>
                   <form onSubmit={handlePlateSearch} className="space-y-3">
                     <input
+                      id="plate-input"
                       type="text"
                       value={plate}
                       onChange={e => { setPlate(e.target.value.toUpperCase()); setError('') }}

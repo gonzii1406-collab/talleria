@@ -4,6 +4,7 @@ import { X, Check } from 'lucide-react'
 
 interface Props {
   onClose: () => void
+  onStart?: () => void
 }
 
 const plans = [
@@ -44,7 +45,8 @@ const plans = [
   },
 ]
 
-export default function PricingModal({ onClose }: Props) {
+export default function PricingModal({ onClose, onStart }: Props) {
+  function handleStart() { onClose(); onStart?.() }
   return (
     <div
       className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
@@ -103,7 +105,7 @@ export default function PricingModal({ onClose }: Props) {
               </ul>
 
               <button
-                onClick={onClose}
+                onClick={handleStart}
                 className={`w-full py-2.5 rounded-lg font-semibold text-sm transition-colors ${
                   plan.popular
                     ? 'bg-blue-600 hover:bg-blue-700 text-white'
