@@ -1,6 +1,6 @@
 {
-  "name": "TallerIA",
-  "short_name": "TallerIA",
+  "name": "ECUnex",
+  "short_name": "ECUnex",
   "description": "Diagnóstico IA para talleres mecánicos",
   "start_url": "/",
   "display": "standalone",

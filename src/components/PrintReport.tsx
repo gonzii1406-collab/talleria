@@ -29,7 +29,7 @@ export default function PrintReport({ vehicle, report }: Props) {
       <div className="print-only hidden">
         <div style={{ fontFamily: 'Arial, sans-serif', padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
           <div style={{ borderBottom: '2px solid #1d4ed8', paddingBottom: '12px', marginBottom: '20px' }}>
-            <h1 style={{ fontSize: '22px', fontWeight: 'bold', color: '#1d4ed8', margin: 0 }}>TallerIA — Informe de Diagnóstico</h1>
+            <h1 style={{ fontSize: '22px', fontWeight: 'bold', color: '#1d4ed8', margin: 0 }}>ECUnex — Informe de Diagnóstico</h1>
             <p style={{ fontSize: '12px', color: '#6b7280', margin: '4px 0 0' }}>{new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
           </div>
 
@@ -86,7 +86,7 @@ export default function PrintReport({ vehicle, report }: Props) {
           </div>
 
           <div style={{ marginTop: '24px', borderTop: '1px solid #e5e7eb', paddingTop: '8px', fontSize: '11px', color: '#9ca3af', textAlign: 'center' }}>
-            Generado por TallerIA · Diagnóstico asistido por IA · Verificar siempre con equipos de taller
+            Generado por ECUnex · Diagnóstico asistido por IA · Verificar siempre con equipos de taller
           </div>
         </div>
       </div>

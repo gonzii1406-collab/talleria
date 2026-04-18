@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TallerIA — Diagnóstico IA para talleres",
+  title: "ECUnex — Diagnóstico IA para talleres",
   description:
     "Diagnóstico inteligente para talleres mecánicos en España. Obtén causas, pruebas y soluciones por código de fallo OBD con inteligencia artificial.",
   manifest: "/manifest.json",

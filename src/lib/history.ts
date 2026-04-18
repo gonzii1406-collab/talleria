@@ -8,7 +8,7 @@ export interface HistoryEntry {
   report: DiagnosticReport
 }
 
-const KEY = 'talleria_history'
+const KEY = 'ecunex_history'
 
 export function getHistory(): HistoryEntry[] {
   if (typeof window === 'undefined') return []

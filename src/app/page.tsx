@@ -120,7 +120,7 @@ export default function Home() {
               <Wrench className="w-4 h-4 text-white" />
             </div>
             <span className="font-bold text-gray-900 text-base">
-              Taller<span className="text-blue-600">IA</span>
+              ECU<span className="text-blue-600">nex</span>
             </span>
           </button>
 
@@ -166,7 +166,7 @@ export default function Home() {
               </h1>
 
               <p className="text-slate-400 text-base sm:text-lg max-w-lg mx-auto mb-8">
-                Introduce la matrícula y el código de fallo. TallerIA genera causas, esquemas eléctricos y soluciones en segundos.
+                Introduce la matrícula y el código de fallo. ECUnex genera causas, esquemas eléctricos y soluciones en segundos.
               </p>
 
               {/* Feature pills */}
@@ -231,7 +231,7 @@ export default function Home() {
 
           {/* Features */}
           <section className="max-w-4xl mx-auto px-4 py-14">
-            <p className="text-xs font-semibold text-blue-600 uppercase tracking-wider text-center mb-2">Por qué TallerIA</p>
+            <p className="text-xs font-semibold text-blue-600 uppercase tracking-wider text-center mb-2">Por qué ECUnex</p>
             <h2 className="text-2xl font-bold text-gray-900 text-center mb-10">
               Todo lo que necesita un taller profesional
             </h2>
@@ -254,7 +254,7 @@ export default function Home() {
               {[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-yellow-300 text-yellow-300" />)}
             </div>
             <blockquote className="text-white text-lg font-medium max-w-md mx-auto mb-2">
-              "Con TallerIA diagnosticamos en la mitad de tiempo. Los esquemas eléctricos son una pasada."
+              "Con ECUnex diagnosticamos en la mitad de tiempo. Los esquemas eléctricos son una pasada."
             </blockquote>
             <p className="text-blue-200 text-sm mb-8">— Marc G., Mecánico · Urbancar Rubí</p>
             <button
@@ -274,13 +274,13 @@ export default function Home() {
           {/* Footer */}
           <footer className="border-t border-gray-100 py-6 px-4">
             <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-400">
-              <span className="font-semibold text-gray-900">Taller<span className="text-blue-600">IA</span></span>
+              <span className="font-semibold text-gray-900">ECU<span className="text-blue-600">nex</span></span>
               <div className="flex gap-4">
                 <button onClick={() => setShowPricing(true)} className="hover:text-gray-700 transition-colors">Precios</button>
                 <span>Privacidad</span>
                 <span>Términos</span>
               </div>
-              <span>© 2025 TallerIA · Diagnóstico asistido por IA</span>
+              <span>© 2025 ECUnex · Diagnóstico asistido por IA</span>
             </div>
           </footer>
         </main>

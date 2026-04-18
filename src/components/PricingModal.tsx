@@ -57,7 +57,7 @@ export default function PricingModal({ onClose }: Props) {
         {/* Header */}
         <div className="bg-gradient-to-r from-slate-900 to-blue-950 px-6 py-5 flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold text-white">Planes TallerIA</h2>
+            <h2 className="text-xl font-bold text-white">Planes ECUnex</h2>
             <p className="text-blue-200 text-sm mt-0.5">Sin permanencia · Cancela cuando quieras</p>
           </div>
           <button

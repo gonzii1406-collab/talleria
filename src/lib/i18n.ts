@@ -2,7 +2,7 @@ export type Locale = 'es' | 'en'
 
 export const translations = {
   es: {
-    appName: 'TallerIA',
+    appName: 'ECUnex',
     tagline: 'Diagnóstico inteligente para talleres',
     searchPlaceholder: 'Matrícula (ej: 1234ABC)',
     faultPlaceholder: 'Código de fallo (ej: P0300, C1234...)',
@@ -46,7 +46,7 @@ export const translations = {
     changePlate: 'Cambiar vehículo',
   },
   en: {
-    appName: 'TallerIA',
+    appName: 'ECUnex',
     tagline: 'Smart diagnostics for workshops',
     searchPlaceholder: 'License plate (e.g. 1234ABC)',
     faultPlaceholder: 'Fault code (e.g. P0300, C1234...)',
