@@ -32,7 +32,7 @@ const plans = [
   },
   {
     name: 'Taller',
-    price: '129',
+    price: '120',
     popular: false,
     features: [
       'Usuarios ilimitados',
