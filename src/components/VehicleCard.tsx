@@ -41,11 +41,16 @@ export default function VehicleCard({ vehicle, t, onReset, onUpdate }: Props) {
     return (
       <div className="bg-blue-50 border-2 border-blue-400 rounded-xl p-4">
         <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <Car className="w-5 h-5 text-blue-600" />
-            <h2 className="font-semibold text-blue-900">
-              {!vehicle.brand ? (t.vehicle.fillData ?? 'Introduce los datos del vehículo') : t.vehicleInfo}
-            </h2>
+          <div className="flex items-center gap-2 flex-1 min-w-0">
+            <Car className="w-5 h-5 text-blue-600 shrink-0" />
+            <div>
+              <h2 className="font-semibold text-blue-900">
+                {!vehicle.brand ? 'Introduce los datos del vehículo' : t.vehicleInfo}
+              </h2>
+              {!vehicle.brand && (
+                <p className="text-xs text-amber-600 mt-0.5">No se pudo leer la matrícula automáticamente</p>
+              )}
+            </div>
           </div>
           <div className="flex gap-2">
             <button onClick={cancel} className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700 border border-gray-300 rounded-md px-2 py-1">
@@ -95,8 +100,9 @@ export default function VehicleCard({ vehicle, t, onReset, onUpdate }: Props) {
               min={1960}
               max={2030}
               className="w-full font-semibold text-gray-900 bg-transparent border-b border-blue-300 focus:outline-none focus:border-blue-500 text-sm"
-              value={draft.year}
-              onChange={e => set('year', parseInt(e.target.value) || draft.year)}
+              value={draft.year || ''}
+              placeholder="2000"
+              onChange={e => set('year', parseInt(e.target.value) || 0)}
             />
           </div>
 

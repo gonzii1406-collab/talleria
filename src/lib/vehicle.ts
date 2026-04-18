@@ -116,7 +116,7 @@ export async function lookupVehicle(plate: string): Promise<Vehicle> {
     plate: cleanPlate,
     brand: '',
     model: '',
-    year: new Date().getFullYear(),
+    year: 0,
     engine: '',
     fuel: 'Diesel',
   }
