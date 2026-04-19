@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { useSignIn, useSignUp } from '@clerk/nextjs'
+// Use legacy API for custom flows (Clerk v7 signal API lacks authenticateWithRedirect)
+import { useSignIn, useSignUp } from '@clerk/nextjs/legacy'
 import { X, Mail, Lock, Loader2, Eye, EyeOff, Cpu } from 'lucide-react'
 
 interface Props {
@@ -19,21 +20,22 @@ export default function AuthModal({ onClose, onSuccess }: Props) {
   const [verifying, setVerifying] = useState(false)
   const [code, setCode] = useState('')
 
-  const { signIn, setActive: setActiveSignIn } = useSignIn()
-  const { signUp, setActive: setActiveSignUp } = useSignUp()
+  const { signIn, isLoaded: signInLoaded, setActive: setActiveSignIn } = useSignIn()
+  const { signUp, isLoaded: signUpLoaded, setActive: setActiveSignUp } = useSignUp()
 
   async function handleGoogleAuth() {
+    if (!signInLoaded || !signUpLoaded) return
     setLoading(true)
     setError('')
     try {
       if (mode === 'signin') {
-        await signIn?.authenticateWithRedirect({
+        await signIn.authenticateWithRedirect({
           strategy: 'oauth_google',
           redirectUrl: '/sso-callback',
           redirectUrlComplete: '/',
         })
       } else {
-        await signUp?.authenticateWithRedirect({
+        await signUp.authenticateWithRedirect({
           strategy: 'oauth_google',
           redirectUrl: '/sso-callback',
           redirectUrlComplete: '/',
@@ -47,19 +49,20 @@ export default function AuthModal({ onClose, onSuccess }: Props) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    if (!signInLoaded || !signUpLoaded) return
     setLoading(true)
     setError('')
     try {
       if (mode === 'signin') {
-        const result = await signIn?.create({ identifier: email, password })
-        if (result?.status === 'complete') {
-          await setActiveSignIn!({ session: result.createdSessionId })
+        const result = await signIn.create({ identifier: email, password })
+        if (result.status === 'complete') {
+          await setActiveSignIn({ session: result.createdSessionId })
           onSuccess()
           onClose()
         }
       } else {
-        await signUp?.create({ emailAddress: email, password })
-        await signUp?.prepareEmailAddressVerification({ strategy: 'email_code' })
+        await signUp.create({ emailAddress: email, password })
+        await signUp.prepareEmailAddressVerification({ strategy: 'email_code' })
         setVerifying(true)
       }
     } catch (err: unknown) {
@@ -72,12 +75,13 @@ export default function AuthModal({ onClose, onSuccess }: Props) {
 
   async function handleVerify(e: React.FormEvent) {
     e.preventDefault()
+    if (!signUpLoaded) return
     setLoading(true)
     setError('')
     try {
-      const result = await signUp?.attemptEmailAddressVerification({ code })
-      if (result?.status === 'complete') {
-        await setActiveSignUp!({ session: result.createdSessionId })
+      const result = await signUp.attemptEmailAddressVerification({ code })
+      if (result.status === 'complete') {
+        await setActiveSignUp({ session: result.createdSessionId })
         onSuccess()
         onClose()
       }
