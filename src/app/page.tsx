@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Search, Loader2, Wrench, Zap, FileText, Clock, Star, ChevronRight, Cpu } from 'lucide-react'
+import { Loader2, Wrench, Zap, FileText, Clock, Star, ChevronRight, Cpu, Car, ChevronDown } from 'lucide-react'
 import Logo from '@/components/Logo'
 import { Locale, translations } from '@/lib/i18n'
 import { Vehicle } from '@/lib/vehicle'
@@ -43,13 +43,25 @@ const FEATURES = [
   },
 ]
 
+const BRANDS = [
+  'Abarth','Alfa Romeo','Audi','BMW','Chevrolet','Citroën','Cupra','Dacia','DS','Fiat',
+  'Ford','Honda','Hyundai','Infiniti','Jaguar','Jeep','Kia','Lamborghini','Land Rover',
+  'Lexus','Maserati','Mazda','Mercedes-Benz','Mini','Mitsubishi','Nissan','Opel','Peugeot',
+  'Porsche','Renault','SEAT','Skoda','Smart','Subaru','Suzuki','Tesla','Toyota','Volkswagen',
+  'Volvo',
+]
+
+const FUEL_OPTIONS = ['Diesel', 'Gasolina', 'Híbrido', 'Eléctrico', 'GLP', 'GNC']
+
+const CURRENT_YEAR = new Date().getFullYear()
+const YEARS = Array.from({ length: CURRENT_YEAR - 1979 }, (_, i) => CURRENT_YEAR - i)
+
 export default function Home() {
   const { isSignedIn } = useUser()
   const [locale, setLocale] = useState<Locale>('es')
   const t = translations[locale]
 
   const [step, setStep] = useState<Step>('search')
-  const [plate, setPlate] = useState('')
   const [faultCode, setFaultCode] = useState('')
   const [vehicle, setVehicle] = useState<Vehicle | null>(null)
   const [report, setReport] = useState<DiagnosticReport | null>(null)
@@ -59,25 +71,30 @@ export default function Home() {
   const [showAuth, setShowAuth] = useState(false)
   const [pendingPlan, setPendingPlan] = useState<string | null>(null)
 
-  async function handlePlateSearch(e: React.FormEvent) {
+  // Vehicle form state
+  const [vBrand, setVBrand] = useState('')
+  const [vModel, setVModel] = useState('')
+  const [vYear, setVYear] = useState('')
+  const [vFuel, setVFuel] = useState('Diesel')
+  const [vEngine, setVEngine] = useState('')
+  const [vPlate, setVPlate] = useState('')
+
+  function handleVehicleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!plate.trim()) return
-    setLoading(true)
-    setError('')
-    try {
-      const res = await fetch(`/api/vehicle?plate=${encodeURIComponent(plate)}`)
-      const data = await res.json()
-      if (!res.ok) {
-        setError(data.error === 'INVALID_PLATE' ? t.errors.invalidPlate : t.errors.notFound)
-        return
-      }
-      setVehicle(data)
-      setStep('fault')
-    } catch {
-      setError(t.errors.apiError)
-    } finally {
-      setLoading(false)
+    if (!vBrand.trim() || !vModel.trim()) {
+      setError('Introduce al menos la marca y el modelo')
+      return
     }
+    setError('')
+    setVehicle({
+      plate: vPlate.replace(/\s/g, '').toUpperCase() || '—',
+      brand: vBrand.trim(),
+      model: vModel.trim(),
+      year: parseInt(vYear) || 0,
+      fuel: vFuel,
+      engine: vEngine.trim(),
+    })
+    setStep('fault')
   }
 
   async function handleDiagnose(e: React.FormEvent) {
@@ -104,8 +121,9 @@ export default function Home() {
   }
 
   function reset() {
-    setStep('search'); setPlate(''); setFaultCode('')
+    setStep('search'); setFaultCode('')
     setVehicle(null); setReport(null); setError('')
+    setVBrand(''); setVModel(''); setVYear(''); setVFuel('Diesel'); setVEngine(''); setVPlate('')
   }
 
   function restoreFromHistory(v: Vehicle, r: DiagnosticReport) {
@@ -207,34 +225,88 @@ export default function Home() {
                 </h1>
 
                 <p className="text-slate-400 text-lg leading-relaxed mb-8 max-w-md">
-                  Introduce la matrícula y el código OBD. ECUnex genera en segundos: causas, pruebas con esquemas eléctricos y soluciones paso a paso.
+                  Introduce el vehículo y el código OBD. ECUnex genera en segundos: causas, pruebas con esquemas eléctricos y soluciones paso a paso.
                 </p>
 
-                {/* Search */}
+                {/* Vehicle form */}
                 <div className="bg-white/5 border border-white/10 rounded-2xl p-5 backdrop-blur-sm max-w-md">
-                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-3">
-                    Introduce la matrícula
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <Car className="w-3.5 h-3.5" /> Datos del vehículo
                   </p>
-                  <form onSubmit={handlePlateSearch} className="space-y-3">
-                    <input
-                      id="plate-input"
-                      type="text"
-                      value={plate}
-                      onChange={e => { setPlate(e.target.value.toUpperCase()); setError('') }}
-                      placeholder="1234 ABC"
-                      className="w-full px-4 py-4 rounded-xl bg-white border-2 border-transparent focus:border-blue-500 focus:outline-none font-mono text-2xl tracking-[0.25em] uppercase text-center font-black text-gray-900 transition-all placeholder:text-gray-300 placeholder:font-light placeholder:tracking-normal"
-                      maxLength={10}
-                      autoFocus
-                    />
+                  <form onSubmit={handleVehicleSubmit} className="space-y-3">
+                    {/* Brand + Model */}
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="relative">
+                        <input
+                          list="brands-list"
+                          value={vBrand}
+                          onChange={e => { setVBrand(e.target.value); setError('') }}
+                          placeholder="Marca *"
+                          autoFocus
+                          className="w-full px-3 py-3 rounded-xl bg-white/90 border-2 border-transparent focus:border-blue-500 focus:outline-none text-sm font-semibold text-gray-900 placeholder:text-gray-400 placeholder:font-normal transition-all"
+                        />
+                        <datalist id="brands-list">
+                          {BRANDS.map(b => <option key={b} value={b} />)}
+                        </datalist>
+                      </div>
+                      <input
+                        value={vModel}
+                        onChange={e => { setVModel(e.target.value); setError('') }}
+                        placeholder="Modelo *"
+                        className="w-full px-3 py-3 rounded-xl bg-white/90 border-2 border-transparent focus:border-blue-500 focus:outline-none text-sm font-semibold text-gray-900 placeholder:text-gray-400 placeholder:font-normal transition-all"
+                      />
+                    </div>
+
+                    {/* Year + Fuel */}
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="relative">
+                        <select
+                          value={vYear}
+                          onChange={e => setVYear(e.target.value)}
+                          className="w-full px-3 py-3 rounded-xl bg-white/90 border-2 border-transparent focus:border-blue-500 focus:outline-none text-sm font-semibold text-gray-900 transition-all appearance-none"
+                        >
+                          <option value="">Año</option>
+                          {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
+                        </select>
+                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
+                      </div>
+                      <div className="relative">
+                        <select
+                          value={vFuel}
+                          onChange={e => setVFuel(e.target.value)}
+                          className="w-full px-3 py-3 rounded-xl bg-white/90 border-2 border-transparent focus:border-blue-500 focus:outline-none text-sm font-semibold text-gray-900 transition-all appearance-none"
+                        >
+                          {FUEL_OPTIONS.map(f => <option key={f}>{f}</option>)}
+                        </select>
+                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
+                      </div>
+                    </div>
+
+                    {/* Engine + Plate (optional) */}
+                    <div className="grid grid-cols-2 gap-2">
+                      <input
+                        value={vEngine}
+                        onChange={e => setVEngine(e.target.value)}
+                        placeholder="Motor (ej: 2.0 TDI)"
+                        className="w-full px-3 py-3 rounded-xl bg-white/90 border-2 border-transparent focus:border-blue-500 focus:outline-none text-sm text-gray-900 placeholder:text-gray-400 placeholder:text-xs transition-all"
+                      />
+                      <input
+                        value={vPlate}
+                        onChange={e => setVPlate(e.target.value.toUpperCase())}
+                        placeholder="Matrícula (opcional)"
+                        className="w-full px-3 py-3 rounded-xl bg-white/90 border-2 border-transparent focus:border-blue-500 focus:outline-none text-sm font-mono text-gray-900 placeholder:text-gray-400 placeholder:text-xs placeholder:font-sans transition-all"
+                        maxLength={10}
+                      />
+                    </div>
+
                     {error && <p className="text-red-400 text-sm text-center">{error}</p>}
+
                     <button
                       type="submit"
-                      disabled={loading || !plate.trim()}
+                      disabled={!vBrand.trim() || !vModel.trim()}
                       className="w-full py-4 bg-blue-600 hover:bg-blue-500 active:scale-[0.99] disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-xl font-bold text-base transition-all flex items-center justify-center gap-2 shadow-xl shadow-blue-600/30"
                     >
-                      {loading
-                        ? <><Loader2 className="w-4 h-4 animate-spin" /> Buscando vehículo...</>
-                        : <><Search className="w-4 h-4" /> Buscar vehículo</>}
+                      <Wrench className="w-4 h-4" /> Iniciar diagnóstico
                     </button>
                   </form>
                 </div>
@@ -268,12 +340,11 @@ export default function Home() {
                   </div>
                   {/* Mockup content */}
                   <div className="p-5 space-y-3">
-                    {/* Plate + vehicle */}
+                    {/* Vehicle card */}
                     <div className="bg-slate-900 rounded-xl p-4">
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className="inline-flex items-stretch rounded overflow-hidden border-2 border-gray-300">
-                          <div className="bg-[#003399] px-1 flex items-center"><span className="text-white text-[8px] font-bold">E</span></div>
-                          <div className="bg-white px-2 py-0.5 font-black text-gray-900 text-xs tracking-wider">1234 ABC</div>
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 bg-blue-600/20 rounded-lg flex items-center justify-center shrink-0">
+                          <Car className="w-4 h-4 text-blue-400" />
                         </div>
                         <div>
                           <p className="text-white text-xs font-bold">Volkswagen Golf</p>

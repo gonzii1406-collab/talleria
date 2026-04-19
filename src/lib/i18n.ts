@@ -4,9 +4,7 @@ export const translations = {
   es: {
     appName: 'ECUnex',
     tagline: 'Diagnóstico inteligente para talleres',
-    searchPlaceholder: 'Matrícula (ej: 1234ABC)',
     faultPlaceholder: 'Código de fallo (ej: P0300, C1234...)',
-    searchBtn: 'Buscar vehículo',
     diagnoseBtn: 'Analizar fallo',
     diagnosing: 'Analizando...',
     vehicleInfo: 'Datos del vehículo',
@@ -41,16 +39,13 @@ export const translations = {
       apiError: 'Error al conectar con el servicio',
       emptyFault: 'Introduce un código de fallo',
     },
-    demo: 'Modo demo activo — introduce cualquier matrícula',
     newSearch: 'Nueva búsqueda',
-    changePlate: 'Cambiar vehículo',
+    changeVehicle: 'Cambiar vehículo',
   },
   en: {
     appName: 'ECUnex',
     tagline: 'Smart diagnostics for workshops',
-    searchPlaceholder: 'License plate (e.g. 1234ABC)',
     faultPlaceholder: 'Fault code (e.g. P0300, C1234...)',
-    searchBtn: 'Search vehicle',
     diagnoseBtn: 'Analyze fault',
     diagnosing: 'Analyzing...',
     vehicleInfo: 'Vehicle data',
@@ -85,9 +80,8 @@ export const translations = {
       apiError: 'Error connecting to service',
       emptyFault: 'Enter a fault code',
     },
-    demo: 'Demo mode active — enter any license plate',
     newSearch: 'New search',
-    changePlate: 'Change vehicle',
+    changeVehicle: 'Change vehicle',
   },
 } satisfies Record<Locale, object>
 

@@ -15,6 +15,8 @@ interface Props {
 const FUEL_OPTIONS = ['Diesel', 'Gasolina', 'Híbrido', 'Eléctrico', 'GLP', 'GNC']
 
 function PlateDisplay({ plate }: { plate: string }) {
+  const hasPlate = plate && plate !== '—'
+  if (!hasPlate) return null
   return (
     <div className="inline-flex items-stretch rounded overflow-hidden border-2 border-gray-800 shadow-sm">
       {/* EU strip */}
@@ -46,19 +48,12 @@ export default function VehicleCard({ vehicle, t, onReset, onUpdate }: Props) {
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
         {/* Edit header */}
         <div className="bg-slate-900 px-4 py-3 flex items-center justify-between">
-          <div>
+          <div className="flex items-center gap-3">
             <PlateDisplay plate={vehicle.plate} />
-            {!vehicle.brand && (
-              <div className="mt-2 space-y-0.5">
-                <p className="text-amber-400 text-xs font-medium">
-                  Introduce los datos del vehículo
-                </p>
-                {vehicle.yearIsEstimate && vehicle.year > 0 && (
-                  <p className="text-slate-400 text-xs">
-                    Año estimado por matrícula: <span className="text-cyan-400 font-semibold">~{vehicle.year}</span>
-                  </p>
-                )}
-              </div>
+            {vehicle.brand ? (
+              <p className="text-white font-semibold text-sm">{vehicle.brand} {vehicle.model}</p>
+            ) : (
+              <p className="text-amber-400 text-xs font-medium">Editar datos del vehículo</p>
             )}
           </div>
           <div className="flex gap-2">
@@ -139,6 +134,17 @@ export default function VehicleCard({ vehicle, t, onReset, onUpdate }: Props) {
               ))}
             </div>
           </div>
+
+          <div className="col-span-2 space-y-1">
+            <label className="text-xs font-medium text-gray-400 uppercase tracking-wider">Matrícula (opcional)</label>
+            <input
+              className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-blue-500 focus:outline-none text-sm font-mono font-bold text-gray-900 tracking-widest uppercase transition-colors"
+              value={draft.plate === '—' ? '' : draft.plate}
+              placeholder="1234 ABC"
+              maxLength={10}
+              onChange={e => set('plate', e.target.value.replace(/\s/g,'').toUpperCase() || '—')}
+            />
+          </div>
         </div>
       </div>
     )
@@ -148,27 +154,28 @@ export default function VehicleCard({ vehicle, t, onReset, onUpdate }: Props) {
     <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
       {/* Dark header */}
       <div className="bg-slate-900 px-4 py-4">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-4">
-            <PlateDisplay plate={vehicle.plate} />
-            <div>
-              <p className="text-white font-bold text-base leading-tight">
-                {vehicle.brand} {vehicle.model}
-              </p>
-              <p className="text-slate-400 text-sm mt-0.5">
-                {vehicle.year
-                  ? <>{vehicle.yearIsEstimate ? <span className="text-cyan-400/80">~{vehicle.year}</span> : vehicle.year}</>
-                  : '—'
-                } · {vehicle.fuel}
-              </p>
-              {(vehicle.engine || vehicle.displacement || vehicle.power) && (
-                <div className="flex items-center gap-1 mt-2">
-                  <span className="bg-slate-700 text-slate-300 text-xs px-2 py-0.5 rounded-md font-mono">
-                    {[vehicle.engine, vehicle.displacement, vehicle.power].filter(Boolean).join(' · ')}
-                  </span>
-                </div>
-              )}
-            </div>
+        <div className="flex items-start gap-4">
+          <PlateDisplay plate={vehicle.plate} />
+          <div>
+            <p className="text-white font-bold text-base leading-tight">
+              {vehicle.brand} {vehicle.model}
+            </p>
+            <p className="text-slate-400 text-sm mt-0.5">
+              {vehicle.year
+                ? <>{vehicle.yearIsEstimate ? <span className="text-cyan-400/80">~{vehicle.year}</span> : vehicle.year}</>
+                : '—'
+              } · {vehicle.fuel}
+            </p>
+            {(vehicle.engine || vehicle.displacement || vehicle.power) && (
+              <div className="flex items-center gap-1 mt-2">
+                <span className="bg-slate-700 text-slate-300 text-xs px-2 py-0.5 rounded-md font-mono">
+                  {[vehicle.engine, vehicle.displacement, vehicle.power].filter(Boolean).join(' · ')}
+                </span>
+              </div>
+            )}
+            {vehicle.plate && vehicle.plate !== '—' && (
+              <p className="text-slate-500 text-xs mt-1 font-mono">{vehicle.plate}</p>
+            )}
           </div>
         </div>
       </div>
@@ -179,7 +186,7 @@ export default function VehicleCard({ vehicle, t, onReset, onUpdate }: Props) {
           onClick={onReset}
           className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-700 transition-colors"
         >
-          <ArrowLeft className="w-3 h-3" /> {t.changePlate}
+          <ArrowLeft className="w-3 h-3" /> {t.changeVehicle}
         </button>
         <button
           onClick={startEdit}
