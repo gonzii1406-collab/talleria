@@ -19,8 +19,17 @@ export const metadata: Metadata = {
   description:
     "Diagnóstico inteligente para talleres mecánicos en España. Obtén causas, pruebas y soluciones por código de fallo OBD con inteligencia artificial.",
   manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "ECUnex",
+  },
   other: {
     "theme-color": "#1e40af",
+    "mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-status-bar-style": "black-translucent",
+    "apple-touch-icon": "/apple-touch-icon.png",
   },
 };
 
