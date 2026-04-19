@@ -26,23 +26,22 @@ export const metadata: Metadata = {
 
 const clerkAppearance = {
   variables: {
-    colorPrimary: '#3b82f6',
-    colorBackground: '#1e293b',
-    colorInputBackground: '#0f172a',
-    colorInputText: '#ffffff',
-    colorText: '#ffffff',
-    colorTextSecondary: '#cbd5e1',
+    colorPrimary: '#2563eb',
+    colorBackground: '#ffffff',
+    colorInputBackground: '#f8fafc',
+    colorInputText: '#0f172a',
+    colorText: '#0f172a',
+    colorTextSecondary: '#475569',
     colorNeutral: '#64748b',
     borderRadius: '0.75rem',
     fontFamily: 'var(--font-geist-sans)',
-    fontSize: '15px',
   },
   elements: {
-    card: 'shadow-2xl shadow-black/60 border border-slate-600',
-    headerTitle: 'font-bold',
-    socialButtonsBlockButton: 'border border-slate-500 hover:border-slate-400 transition-colors',
-    formButtonPrimary: 'font-semibold shadow-lg',
-    footerActionLink: 'font-semibold',
+    card: 'shadow-2xl shadow-black/40 border-0',
+    headerTitle: 'text-slate-900 font-bold text-xl',
+    headerSubtitle: 'text-slate-500',
+    formButtonPrimary: 'bg-blue-600 hover:bg-blue-700 font-semibold',
+    footerActionLink: 'text-blue-600 font-semibold hover:text-blue-700',
   },
 }
 
