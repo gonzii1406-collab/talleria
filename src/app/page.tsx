@@ -13,6 +13,7 @@ import DiagnosticReportView from '@/components/DiagnosticReport'
 import HistoryPanel from '@/components/HistoryPanel'
 import PrintReport from '@/components/PrintReport'
 import PricingModal from '@/components/PricingModal'
+import { UserButton, SignInButton, useUser } from '@clerk/nextjs'
 
 type Step = 'search' | 'fault' | 'report'
 
@@ -42,6 +43,7 @@ const FEATURES = [
 ]
 
 export default function Home() {
+  const { isSignedIn } = useUser()
   const [locale, setLocale] = useState<Locale>('es')
   const t = translations[locale]
 
@@ -128,12 +130,15 @@ export default function Home() {
             >
               Precios
             </button>
-            <button
-              onClick={() => setShowPricing(true)}
-              className="text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-lg transition-colors"
-            >
-              Empezar
-            </button>
+            {isSignedIn ? (
+              <UserButton appearance={{ elements: { avatarBox: 'w-8 h-8' } }} />
+            ) : (
+              <SignInButton mode="modal">
+                <button className="text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-lg transition-colors">
+                  Empezar
+                </button>
+              </SignInButton>
+            )}
           </div>
         </div>
       </header>
