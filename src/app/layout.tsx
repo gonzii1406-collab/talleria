@@ -63,10 +63,6 @@ export default function RootLayout({
     <ClerkProvider
       localization={esES}
       appearance={clerkAppearance}
-      afterSignInUrl="/"
-      afterSignUpUrl="/"
-      signInUrl="/sign-in"
-      signUpUrl="/sign-up"
     >
       <html
         lang="es"
