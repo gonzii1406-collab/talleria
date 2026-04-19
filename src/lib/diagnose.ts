@@ -136,14 +136,16 @@ For each test, include an SVG electrical diagram showing:
 - Expected voltage or resistance values at each measurement point
 - Ground symbols (triangle) and power source (battery) when relevant
 
-SVG guidelines:
-- Background: light gray (#f8f9fa) or white
-- Shapes: rect, circle, line, path, text — NO scripts, NO event handlers
-- Wire colors: red=#dc2626, black=#111827, blue=#2563eb, green=#16a34a, yellow=#ca8a04, orange=#ea580c
-- Font: Arial, 11-12px
-- Viewbox: 400×200 or 500×250 for complex diagrams
+SVG guidelines (STRICT — keep diagrams compact):
+- Background: light gray (#f8f9fa)
+- Only use: rect, circle, line, text — NO path, NO scripts, NO event handlers
+- Wire colors: red=#dc2626, black=#111827, blue=#2563eb, green=#16a34a, yellow=#ca8a04
+- Font: Arial, 11px
+- Viewbox: EXACTLY 400×180 — no larger
+- Max 8 elements per SVG (rectangles + lines + labels)
+- Keep SVG under 1500 characters total
 
-Generate exactly 3 tests. Include an SVG diagram ONLY for the first 2 tests. For test 3, omit the diagram field. Return ONLY the JSON.`
+Generate exactly 3 tests. Include an SVG diagram ONLY for the first 2 tests (compact, under 1500 chars each). For test 3, omit the diagram field entirely. Return ONLY the JSON.`
 
   const apiKey = process.env.ANTHROPIC_API_KEY
   if (!apiKey) throw new Error('ANTHROPIC_API_KEY not set')
