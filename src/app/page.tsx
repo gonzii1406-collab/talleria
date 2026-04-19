@@ -13,7 +13,8 @@ import DiagnosticReportView from '@/components/DiagnosticReport'
 import HistoryPanel from '@/components/HistoryPanel'
 import PrintReport from '@/components/PrintReport'
 import PricingModal from '@/components/PricingModal'
-import { UserButton, SignInButton, useUser } from '@clerk/nextjs'
+import AuthModal from '@/components/AuthModal'
+import { UserButton, useUser } from '@clerk/nextjs'
 
 type Step = 'search' | 'fault' | 'report'
 
@@ -55,6 +56,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [showPricing, setShowPricing] = useState(false)
+  const [showAuth, setShowAuth] = useState(false)
 
   async function handlePlateSearch(e: React.FormEvent) {
     e.preventDefault()
@@ -114,6 +116,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       {showPricing && <PricingModal onClose={() => setShowPricing(false)} />}
+      {showAuth && <AuthModal onClose={() => setShowAuth(false)} onSuccess={() => setShowAuth(false)} />}
 
       {/* ── HEADER ── */}
       <header className="fixed top-0 left-0 right-0 z-40 bg-[#0a0f1e]/95 backdrop-blur border-b border-white/5 no-print">
@@ -133,11 +136,12 @@ export default function Home() {
             {isSignedIn ? (
               <UserButton appearance={{ elements: { avatarBox: 'w-8 h-8' } }} />
             ) : (
-              <SignInButton mode="modal">
-                <button className="text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-lg transition-colors">
-                  Empezar
-                </button>
-              </SignInButton>
+              <button
+                onClick={() => setShowAuth(true)}
+                className="text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-lg transition-colors"
+              >
+                Empezar
+              </button>
             )}
           </div>
         </div>
