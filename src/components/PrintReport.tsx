@@ -59,9 +59,9 @@ export default function PrintReport({ vehicle, report }: Props) {
 
           {/* Secciones */}
           {[
-            { title: 'Causas más probables', items: report.causes },
-            { title: 'Soluciones paso a paso', items: report.solutions },
-            { title: 'Piezas afectadas', items: report.parts },
+            { title: 'Causas más probables', items: report.causes ?? [] },
+            { title: 'Soluciones paso a paso', items: report.solutions ?? [] },
+            { title: 'Piezas afectadas', items: report.parts ?? [] },
           ].map(({ title, items }) => (
             <div key={title} style={{ marginBottom: '16px' }}>
               <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: '#111827', borderBottom: '1px solid #e5e7eb', paddingBottom: '4px', marginBottom: '8px' }}>{title}</h3>
@@ -77,7 +77,7 @@ export default function PrintReport({ vehicle, report }: Props) {
           <div style={{ marginBottom: '16px' }}>
             <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: '#111827', borderBottom: '1px solid #e5e7eb', paddingBottom: '4px', marginBottom: '8px' }}>Pruebas a realizar</h3>
             <ol style={{ margin: 0, paddingLeft: '20px' }}>
-              {report.tests.map((test, i) => (
+              {(report.tests ?? []).map((test, i) => (
                 <li key={i} style={{ fontSize: '13px', color: '#374151', marginBottom: '8px' }}>
                   {typeof test === 'string' ? test : test.procedure}
                 </li>

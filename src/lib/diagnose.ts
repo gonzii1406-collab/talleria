@@ -16,6 +16,91 @@ export interface DiagnosticReport {
   parts: string[]
 }
 
+/** Strips dangerous elements from AI-generated SVG */
+function sanitizeSvg(svg: string): string {
+  return svg
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/\son\w+\s*=\s*(?:"[^"]*"|'[^']*')/gi, '')
+    .replace(/href\s*=\s*(?:"javascript:[^"]*"|'javascript:[^']*')/gi, '')
+    .replace(/xlink:href\s*=\s*(?:"(?!#)[^"]*"|'(?!#)[^']*')/gi, '')
+}
+
+/** Maps any severity string the AI might return to our 3 values */
+function normalizeSeverity(raw: unknown): 'low' | 'medium' | 'high' {
+  const s = String(raw ?? '').toLowerCase()
+  if (['high', 'alta', 'alto', 'critical', 'grave', 'severe', 'crítica'].some(v => s.includes(v))) return 'high'
+  if (['low', 'leve', 'bajo', 'baja', 'minor', 'info', 'informational'].some(v => s.includes(v))) return 'low'
+  return 'medium'
+}
+
+/** Ensures the parsed response has correct shape regardless of AI quirks */
+function normalizeReport(raw: Record<string, unknown>, faultCode: string): DiagnosticReport {
+  const causes = Array.isArray(raw.causes)
+    ? raw.causes.filter(Boolean).map(String)
+    : []
+
+  const tests: TestWithDiagram[] = Array.isArray(raw.tests)
+    ? raw.tests.filter(Boolean).map(t => {
+        if (typeof t === 'string') return { procedure: t }
+        const obj = t as Record<string, unknown>
+        const procedure = String(obj.procedure ?? obj.description ?? obj.test ?? '')
+        const diagram = typeof obj.diagram === 'string' && obj.diagram.trim().startsWith('<svg')
+          ? sanitizeSvg(obj.diagram)
+          : undefined
+        return { procedure, diagram }
+      })
+    : []
+
+  const solutions = Array.isArray(raw.solutions)
+    ? raw.solutions.filter(Boolean).map(String)
+    : []
+
+  const parts = Array.isArray(raw.parts)
+    ? raw.parts.filter(Boolean).map(String)
+    : []
+
+  return {
+    faultCode: String(raw.faultCode ?? faultCode).toUpperCase(),
+    description: String(raw.description ?? 'Sin descripción disponible'),
+    severity: normalizeSeverity(raw.severity),
+    causes,
+    tests,
+    solutions,
+    parts,
+  }
+}
+
+/**
+ * Finds the outermost JSON object in a string using brace counting.
+ * More reliable than regex for nested structures.
+ */
+function extractJSON(text: string): Record<string, unknown> {
+  const start = text.indexOf('{')
+  if (start === -1) throw new Error('No JSON object found in response')
+
+  let depth = 0
+  let inString = false
+  let escape = false
+
+  for (let i = start; i < text.length; i++) {
+    const c = text[i]
+    if (escape) { escape = false; continue }
+    if (c === '\\' && inString) { escape = true; continue }
+    if (c === '"') { inString = !inString; continue }
+    if (inString) continue
+    if (c === '{') depth++
+    if (c === '}') {
+      depth--
+      if (depth === 0) {
+        const json = text.slice(start, i + 1)
+        return JSON.parse(json) as Record<string, unknown>
+      }
+    }
+  }
+
+  throw new Error('Unterminated JSON in response')
+}
+
 export async function diagnose(
   faultCode: string,
   vehicle: Vehicle,
@@ -36,46 +121,60 @@ Respond ONLY with a valid JSON object in ${lang} with this exact structure:
   "causes": ["cause 1", "cause 2", "cause 3", "...up to 6 causes ordered by probability"],
   "tests": [
     {
-      "procedure": "detailed test procedure with specific values and tools",
-      "diagram": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200' width='400' height='200'>...complete SVG electrical diagram showing the test connections, component, wire colors and measurement points...</svg>"
+      "procedure": "detailed test procedure with specific values, tools, and expected measurements",
+      "diagram": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200' width='400' height='200'>...complete SVG electrical diagram...</svg>"
     }
   ],
   "solutions": ["step 1", "step 2", "...ordered step by step repair procedure"],
   "parts": ["part 1", "part 2", "...commonly replaced parts for this fault"]
 }
 
-For each test, create a clear SVG electrical diagram showing:
-- The component being tested (sensor, relay, fuse, etc.) as a labeled rectangle or symbol
-- Wire connections with colors when known (use colored strokes)
-- Multimeter or oscilloscope connection points (red=positive, black=negative/ground)
-- Voltage or resistance values expected at each point
-- Ground points (triangle symbol at bottom)
-- Battery/power source when relevant
+For each test, include an SVG electrical diagram showing:
+- The component being tested (sensor, relay, fuse, ECU, etc.) as a labeled rectangle
+- Wire connections with correct colors (use colored strokes)
+- Multimeter/oscilloscope connection points (red=positive, black=ground)
+- Expected voltage or resistance values at each measurement point
+- Ground symbols (triangle) and power source (battery) when relevant
 
-SVG style guidelines:
-- White or light gray background (#f8f9fa)
-- Use simple geometric shapes: rect, circle, line, path, text
+SVG guidelines:
+- Background: light gray (#f8f9fa) or white
+- Shapes: rect, circle, line, path, text — NO scripts, NO event handlers
 - Wire colors: red=#dc2626, black=#111827, blue=#2563eb, green=#16a34a, yellow=#ca8a04, orange=#ea580c
-- Components: rounded rectangles with labels
-- Measurement points: small colored circles with labels
-- Keep it clean and readable for a mechanic
-- Text font-size: 11-12px, font-family: Arial
+- Font: Arial, 11-12px
+- Viewbox: 400×200 or 500×250 for complex diagrams
 
-Generate up to 4 tests, each with its own specific electrical diagram.`
+Generate exactly 4 tests, each with its own SVG diagram. Return ONLY the JSON.`
 
   const apiKey = process.env.ANTHROPIC_API_KEY
   if (!apiKey) throw new Error('ANTHROPIC_API_KEY not set')
+
   const client = new Anthropic({ apiKey })
+
   const message = await client.messages.create({
     model: 'claude-sonnet-4-6',
-    max_tokens: 8000,
+    max_tokens: 16000,
     messages: [{ role: 'user', content: prompt }],
   })
 
   const text = message.content[0].type === 'text' ? message.content[0].text : ''
-  const jsonMatch = text.match(/\{[\s\S]*\}/)
-  if (!jsonMatch) throw new Error('Invalid AI response')
 
-  const parsed = JSON.parse(jsonMatch[0]) as DiagnosticReport
-  return parsed
+  let raw: Record<string, unknown>
+  try {
+    raw = extractJSON(text)
+  } catch {
+    // Fallback: retry with a simpler prompt (no SVGs) to at least get text data
+    const fallbackMessage = await client.messages.create({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 4000,
+      messages: [{
+        role: 'user',
+        content: `You are an expert automotive technician. For fault code ${faultCode} on a ${vehicle.brand} ${vehicle.model} ${vehicle.year} (${vehicle.fuel}), respond ONLY with this JSON in ${lang}:
+{"faultCode":"${faultCode}","description":"...","severity":"low|medium|high","causes":["...","...","..."],"tests":[{"procedure":"..."},{"procedure":"..."},{"procedure":"..."}],"solutions":["...","...","..."],"parts":["...","..."]}`,
+      }],
+    })
+    const fallbackText = fallbackMessage.content[0].type === 'text' ? fallbackMessage.content[0].text : ''
+    raw = extractJSON(fallbackText)
+  }
+
+  return normalizeReport(raw, faultCode)
 }

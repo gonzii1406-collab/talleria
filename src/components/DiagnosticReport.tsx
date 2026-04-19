@@ -65,9 +65,10 @@ function SectionCard({ title, accent, children }: { title: string; accent: strin
 }
 
 export default function DiagnosticReportView({ report, t, onReset }: Props) {
-  const sev = SEVERITY_CONFIG[report.severity]
+  // Fallback to 'medium' if severity value is unexpected
+  const sev = SEVERITY_CONFIG[report.severity] ?? SEVERITY_CONFIG.medium
 
-  const tests: TestWithDiagram[] = report.tests.map((t: TestWithDiagram | string) =>
+  const tests: TestWithDiagram[] = (report.tests ?? []).map((t: TestWithDiagram | string) =>
     typeof t === 'string' ? { procedure: t } : t
   )
 
@@ -95,7 +96,7 @@ export default function DiagnosticReportView({ report, t, onReset }: Props) {
       {/* Causas */}
       <SectionCard title={t.report.causes} accent="bg-amber-400">
         <ul className="space-y-2.5">
-          {report.causes.map((c, i) => (
+          {(report.causes ?? []).map((c, i) => (
             <li key={i} className="flex gap-3 text-sm text-gray-700">
               <span className="shrink-0 w-5 h-5 rounded-full bg-amber-100 text-amber-700 text-xs font-bold flex items-center justify-center mt-0.5">{i + 1}</span>
               <span className="leading-relaxed">{c}</span>
@@ -119,7 +120,7 @@ export default function DiagnosticReportView({ report, t, onReset }: Props) {
       {/* Soluciones */}
       <SectionCard title={t.report.solutions} accent="bg-emerald-500">
         <ol className="space-y-3">
-          {report.solutions.map((s, i) => (
+          {(report.solutions ?? []).map((s, i) => (
             <li key={i} className="flex gap-3 text-sm text-gray-700">
               <span className="shrink-0 w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold flex items-center justify-center mt-0.5">{i + 1}</span>
               <span className="leading-relaxed pt-0.5">{s}</span>
@@ -131,7 +132,7 @@ export default function DiagnosticReportView({ report, t, onReset }: Props) {
       {/* Piezas */}
       <SectionCard title={t.report.parts} accent="bg-slate-400">
         <div className="flex flex-wrap gap-2">
-          {report.parts.map((p, i) => (
+          {(report.parts ?? []).map((p, i) => (
             <span key={i} className="inline-flex items-center bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-medium px-3 py-1.5 rounded-lg transition-colors">
               {p}
             </span>
