@@ -49,9 +49,16 @@ export default function VehicleCard({ vehicle, t, onReset, onUpdate }: Props) {
           <div>
             <PlateDisplay plate={vehicle.plate} />
             {!vehicle.brand && (
-              <p className="text-amber-400 text-xs mt-2">
-                No se pudo leer la matrícula — introduce los datos manualmente
-              </p>
+              <div className="mt-2 space-y-0.5">
+                <p className="text-amber-400 text-xs font-medium">
+                  Introduce los datos del vehículo
+                </p>
+                {vehicle.yearIsEstimate && vehicle.year > 0 && (
+                  <p className="text-slate-400 text-xs">
+                    Año estimado por matrícula: <span className="text-cyan-400 font-semibold">~{vehicle.year}</span>
+                  </p>
+                )}
+              </div>
             )}
           </div>
           <div className="flex gap-2">
@@ -149,7 +156,10 @@ export default function VehicleCard({ vehicle, t, onReset, onUpdate }: Props) {
                 {vehicle.brand} {vehicle.model}
               </p>
               <p className="text-slate-400 text-sm mt-0.5">
-                {vehicle.year || '—'} · {vehicle.fuel}
+                {vehicle.year
+                  ? <>{vehicle.yearIsEstimate ? <span className="text-cyan-400/80">~{vehicle.year}</span> : vehicle.year}</>
+                  : '—'
+                } · {vehicle.fuel}
               </p>
               {(vehicle.engine || vehicle.displacement || vehicle.power) && (
                 <div className="flex items-center gap-1 mt-2">
