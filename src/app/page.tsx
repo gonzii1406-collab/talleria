@@ -85,6 +85,11 @@ export default function Home() {
       setError('Introduce al menos la marca y el modelo')
       return
     }
+    // Gate: must be logged in to proceed
+    if (!isSignedIn) {
+      setShowAuth(true)
+      return
+    }
     setError('')
     setVehicle({
       plate: vPlate.replace(/\s/g, '').toUpperCase() || '—',
@@ -100,6 +105,8 @@ export default function Home() {
   async function handleDiagnose(e: React.FormEvent) {
     e.preventDefault()
     if (!faultCode.trim()) { setError(t.errors.emptyFault); return }
+    // Gate: must be logged in
+    if (!isSignedIn) { setShowAuth(true); return }
     setLoading(true)
     setError('')
     try {
@@ -306,8 +313,14 @@ export default function Home() {
                       disabled={!vBrand.trim() || !vModel.trim()}
                       className="w-full py-4 bg-blue-600 hover:bg-blue-500 active:scale-[0.99] disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-xl font-bold text-base transition-all flex items-center justify-center gap-2 shadow-xl shadow-blue-600/30"
                     >
-                      <Wrench className="w-4 h-4" /> Iniciar diagnóstico
+                      <Wrench className="w-4 h-4" />
+                      {isSignedIn ? 'Iniciar diagnóstico' : 'Crear cuenta gratis y diagnosticar'}
                     </button>
+                    {!isSignedIn && vBrand.trim() && vModel.trim() && (
+                      <p className="text-center text-slate-500 text-xs">
+                        Gratis durante 7 días · Sin tarjeta
+                      </p>
+                    )}
                   </form>
                 </div>
 
