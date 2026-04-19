@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { diagnose } from '@/lib/diagnose'
+import Anthropic from '@anthropic-ai/sdk'
 import { Vehicle } from '@/lib/vehicle'
+import { diagnose } from '@/lib/diagnose'
+
+export const maxDuration = 300 // 5 min — Vercel Pro/Hobby allows up to 300s
 
 export async function POST(req: NextRequest) {
   try {

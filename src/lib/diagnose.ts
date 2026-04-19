@@ -143,7 +143,7 @@ SVG guidelines:
 - Font: Arial, 11-12px
 - Viewbox: 400×200 or 500×250 for complex diagrams
 
-Generate exactly 4 tests, each with its own SVG diagram. Return ONLY the JSON.`
+Generate exactly 3 tests. Include an SVG diagram ONLY for the first 2 tests. For test 3, omit the diagram field. Return ONLY the JSON.`
 
   const apiKey = process.env.ANTHROPIC_API_KEY
   if (!apiKey) throw new Error('ANTHROPIC_API_KEY not set')
@@ -152,7 +152,7 @@ Generate exactly 4 tests, each with its own SVG diagram. Return ONLY the JSON.`
 
   const message = await client.messages.create({
     model: 'claude-sonnet-4-6',
-    max_tokens: 16000,
+    max_tokens: 8000,
     messages: [{ role: 'user', content: prompt }],
   })
 
