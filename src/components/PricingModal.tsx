@@ -2,9 +2,11 @@
 
 import { useState } from 'react'
 import { X, Check, Loader2 } from 'lucide-react'
+import { useUser } from '@clerk/nextjs'
 
 interface Props {
   onClose: () => void
+  onNeedAuth: (plan: string) => void
 }
 
 const plans = [
@@ -45,11 +47,16 @@ const plans = [
   },
 ]
 
-export default function PricingModal({ onClose }: Props) {
+export default function PricingModal({ onClose, onNeedAuth }: Props) {
+  const { isSignedIn } = useUser()
   const [loading, setLoading] = useState<string | null>(null)
   const [error, setError] = useState('')
 
   async function handleStart(planName: string) {
+    if (!isSignedIn) {
+      onNeedAuth(planName)
+      return
+    }
     setLoading(planName)
     setError('')
     try {

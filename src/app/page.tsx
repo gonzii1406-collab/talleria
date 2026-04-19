@@ -57,6 +57,7 @@ export default function Home() {
   const [error, setError] = useState('')
   const [showPricing, setShowPricing] = useState(false)
   const [showAuth, setShowAuth] = useState(false)
+  const [pendingPlan, setPendingPlan] = useState<string | null>(null)
 
   async function handlePlateSearch(e: React.FormEvent) {
     e.preventDefault()
@@ -115,8 +116,40 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white">
-      {showPricing && <PricingModal onClose={() => setShowPricing(false)} />}
-      {showAuth && <AuthModal onClose={() => setShowAuth(false)} onSuccess={() => setShowAuth(false)} />}
+      {showPricing && (
+        <PricingModal
+          onClose={() => setShowPricing(false)}
+          onNeedAuth={(plan) => {
+            setPendingPlan(plan)
+            setShowPricing(false)
+            setShowAuth(true)
+          }}
+        />
+      )}
+      {showAuth && (
+        <AuthModal
+          onClose={() => { setShowAuth(false); setPendingPlan(null) }}
+          onSuccess={async () => {
+            setShowAuth(false)
+            if (pendingPlan) {
+              const plan = pendingPlan
+              setPendingPlan(null)
+              try {
+                const res = await fetch('/api/checkout', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ plan }),
+                })
+                const data = await res.json()
+                if (data.url) window.location.href = data.url
+                else setShowPricing(true)
+              } catch {
+                setShowPricing(true)
+              }
+            }
+          }}
+        />
+      )}
 
       {/* ── HEADER ── */}
       <header className="fixed top-0 left-0 right-0 z-40 bg-[#0a0f1e]/95 backdrop-blur border-b border-white/5 no-print">
