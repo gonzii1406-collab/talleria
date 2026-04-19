@@ -69,6 +69,7 @@ export default function Home() {
   const [error, setError] = useState('')
   const [showPricing, setShowPricing] = useState(false)
   const [showAuth, setShowAuth] = useState(false)
+  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signup')
   const [pendingPlan, setPendingPlan] = useState<string | null>(null)
 
   // Vehicle form state
@@ -87,6 +88,7 @@ export default function Home() {
     }
     // Gate: must be logged in to proceed
     if (!isSignedIn) {
+      setAuthMode('signup')
       setShowAuth(true)
       return
     }
@@ -106,7 +108,7 @@ export default function Home() {
     e.preventDefault()
     if (!faultCode.trim()) { setError(t.errors.emptyFault); return }
     // Gate: must be logged in
-    if (!isSignedIn) { setShowAuth(true); return }
+    if (!isSignedIn) { setAuthMode('signup'); setShowAuth(true); return }
     setLoading(true)
     setError('')
     try {
@@ -147,12 +149,14 @@ export default function Home() {
           onNeedAuth={(plan) => {
             setPendingPlan(plan)
             setShowPricing(false)
+            setAuthMode('signup')
             setShowAuth(true)
           }}
         />
       )}
       {showAuth && (
         <AuthModal
+          defaultMode={authMode}
           onClose={() => { setShowAuth(false); setPendingPlan(null) }}
           onSuccess={async () => {
             setShowAuth(false)

@@ -8,10 +8,11 @@ import { X, Mail, Lock, Loader2, Eye, EyeOff, Cpu } from 'lucide-react'
 interface Props {
   onClose: () => void
   onSuccess: () => void
+  defaultMode?: 'signin' | 'signup'
 }
 
-export default function AuthModal({ onClose, onSuccess }: Props) {
-  const [mode, setMode] = useState<'signin' | 'signup'>('signin')
+export default function AuthModal({ onClose, onSuccess, defaultMode = 'signup' }: Props) {
+  const [mode, setMode] = useState<'signin' | 'signup'>(defaultMode)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPass, setShowPass] = useState(false)
